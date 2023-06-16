@@ -2,5 +2,7 @@
 
 bin
 
-config/env/*
-!config/env/.env.template
+src/config/env/*
+!.env.template
+.env
+gin-bin

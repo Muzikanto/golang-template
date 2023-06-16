@@ -20,6 +20,7 @@ help:
 	@echo " rename-project name={name}    Rename project"	
 	@echo	
 	@echo " build-http                    Build http server"
+	@echo " dev                           Watch mode"
 	@echo
 	@echo " migration-create name={name}  Create migration"
 	@echo " migration-up                  Up migrations"
@@ -54,7 +55,7 @@ rename-project:
 
 .SILENT: build-http
 build-http:
-	@go build -o ./bin/http-server ./cmd/http/main.go
+	@go build -o ./bin/http-server ./src/main.go
 	@echo executable file \"http-server\" saved in ./bin/http-server
 
 # Test
@@ -96,6 +97,16 @@ docker-down:
 .SILENT: fmt
 fmt:
 	@go fmt ./...
+
+# Watch
+.SILENT: dev
+dev:
+	ENT_PATH=.env gin run ./src/main.go
+
+# Start
+.SILENT: start
+start:
+	ENT_PATH=.env go run ./src/main.go
 
 # Default
 

@@ -1,7 +1,0 @@
-{
-    "explorer.experimental.fileNesting.patterns": {
-        "*.go": "${capture}_test.go",
-        "go.mod": "go.sum"
-    },
-    "explorer.experimental.fileNesting.enabled": true
-}
