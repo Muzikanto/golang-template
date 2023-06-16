@@ -3,8 +3,8 @@ package domain
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"go-backend-template/src/internal/base/crypto"
-	"go-backend-template/src/internal/base/errors"
+	"go-backend-template/src/utils/crypto"
+	errors2 "go-backend-template/src/utils/errors"
 )
 
 type UserDomain struct {
@@ -61,7 +61,7 @@ func (user *UserDomain) Validate() error {
 		validation.Field(&user.Password, validation.Required, validation.Length(5, 100)),
 	)
 	if err != nil {
-		return errors.New(errors.ValidationError, err.Error())
+		return errors2.New(errors2.ValidationError, err.Error())
 	}
 
 	return nil

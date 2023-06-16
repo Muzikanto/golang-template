@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"go-backend-template/src/api/http"
-	"go-backend-template/src/internal/base/database"
+	"go-backend-template/src/utils/database"
+	"go-backend-template/src/utils/http"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"

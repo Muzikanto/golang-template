@@ -2,15 +2,18 @@ package main
 
 import (
 	"context"
-	"go-backend-template/src/api/cli"
-	"go-backend-template/src/api/http"
-	"go-backend-template/src/internal/base/crypto/impl"
-	"go-backend-template/src/internal/base/database/impl"
 	userApplication "go-backend-template/src/modules/user/application"
+	"go-backend-template/src/utils/cli"
+	"go-backend-template/src/utils/crypto/impl"
+	"go-backend-template/src/utils/database/impl"
+	"go-backend-template/src/utils/http"
+	"go.uber.org/dig"
 	"log"
 )
 
 func main() {
+	container := dig.New()
+
 	ctx := context.Background()
 	parser := cli.NewParser()
 
@@ -29,6 +32,8 @@ func main() {
 	defer dbClient.Close()
 
 	crypto := impl.NewCrypto()
+	container.Provide(crypto)
+
 	dbService := database.NewService(dbClient)
 
 	serverOpts := http.ServerOpts{
@@ -40,10 +45,7 @@ func main() {
 
 	//
 	userApplication.NewUserModule(
-		server.Engine,
-		dbService,
-		dbService,
-		crypto,
+		server,
 	)
 
 	log.Fatal(server.Listen())

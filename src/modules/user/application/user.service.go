@@ -2,10 +2,10 @@ package application
 
 import (
 	"context"
-	"go-backend-template/src/internal/base/crypto"
-	"go-backend-template/src/internal/base/database"
 	"go-backend-template/src/modules/user/domain"
 	"go-backend-template/src/modules/user/infrastructure"
+	"go-backend-template/src/utils/crypto"
+	"go-backend-template/src/utils/database"
 )
 
 type UserServiceOpts struct {

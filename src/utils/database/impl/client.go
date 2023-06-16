@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"go-backend-template/src/internal/base/database"
-	errors2 "go-backend-template/src/internal/base/errors"
+	"go-backend-template/src/utils/database"
+	"go-backend-template/src/utils/errors"
 )
 
 type Client struct {
@@ -26,12 +26,12 @@ func (c *Client) Connect() error {
 	config, err := pgxpool.ParseConfig(c.url)
 
 	if err != nil {
-		return errors2.Wrap(err, errors2.DatabaseError, "cannot connect to database")
+		return errors.Wrap(err, errors.DatabaseError, "cannot connect to database")
 	}
 
 	pool, err := pgxpool.ConnectConfig(c.ctx, config)
 	if err != nil {
-		return errors2.Wrap(err, errors2.DatabaseError, "cannot connect to database")
+		return errors.Wrap(err, errors.DatabaseError, "cannot connect to database")
 	}
 
 	c.pool = pool

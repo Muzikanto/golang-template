@@ -2,9 +2,9 @@ package infrastructure
 
 import (
 	"context"
-	database "go-backend-template/src/internal/base/database/impl"
-	"go-backend-template/src/internal/base/errors"
 	"go-backend-template/src/modules/user/domain"
+	"go-backend-template/src/utils/database/impl"
+	errors2 "go-backend-template/src/utils/errors"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -37,7 +37,7 @@ func (r *userRepository) Add(ctx context.Context, model domain.UserDomain) (int6
 		ToSQL()
 
 	if err != nil {
-		return 0, errors.Wrap(err, errors.DatabaseError, "syntax error")
+		return 0, errors2.Wrap(err, errors2.DatabaseError, "syntax error")
 	}
 
 	row := r.Conn(ctx).QueryRow(ctx, sql)
@@ -63,7 +63,7 @@ func (r *userRepository) Update(ctx context.Context, model domain.UserDomain) (i
 		ToSQL()
 
 	if err != nil {
-		return 0, errors.Wrap(err, errors.DatabaseError, "syntax error")
+		return 0, errors2.Wrap(err, errors2.DatabaseError, "syntax error")
 	}
 
 	row := r.Conn(ctx).QueryRow(ctx, sql)
@@ -88,7 +88,7 @@ func (r *userRepository) GetById(ctx context.Context, userId int64) (domain.User
 		ToSQL()
 
 	if err != nil {
-		return domain.UserDomain{}, errors.Wrap(err, errors.DatabaseError, "syntax error")
+		return domain.UserDomain{}, errors2.Wrap(err, errors2.DatabaseError, "syntax error")
 	}
 
 	row := r.Conn(ctx).QueryRow(ctx, sql)
@@ -121,7 +121,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (domain.U
 		ToSQL()
 
 	if err != nil {
-		return domain.UserDomain{}, errors.Wrap(err, errors.DatabaseError, "syntax error")
+		return domain.UserDomain{}, errors2.Wrap(err, errors2.DatabaseError, "syntax error")
 	}
 
 	row := r.Conn(ctx).QueryRow(ctx, sql)
@@ -147,47 +147,47 @@ func parseAddUserError(user *domain.UserDomain, err error) error {
 	if isPgError && pgError.Code == pgerrcode.UniqueViolation {
 		switch pgError.ConstraintName {
 		case "users_email_key":
-			return errors.Wrapf(err, errors.AlreadyExistsError, "user with email \"%s\" already exists", user.Email)
+			return errors2.Wrapf(err, errors2.AlreadyExistsError, "user with email \"%s\" already exists", user.Email)
 		default:
-			return errors.Wrapf(err, errors.DatabaseError, "add user failed")
+			return errors2.Wrapf(err, errors2.DatabaseError, "add user failed")
 		}
 	}
 
-	return errors.Wrapf(err, errors.DatabaseError, "add user failed")
+	return errors2.Wrapf(err, errors2.DatabaseError, "add user failed")
 }
 
 func parseUpdateUserError(user *domain.UserDomain, err error) error {
 	pgError, isPgError := err.(*pgconn.PgError)
 
 	if isPgError && pgError.Code == pgerrcode.UniqueViolation {
-		return errors.Wrapf(err, errors.AlreadyExistsError, "user with email \"%s\" already exists", user.Email)
+		return errors2.Wrapf(err, errors2.AlreadyExistsError, "user with email \"%s\" already exists", user.Email)
 	}
 
-	return errors.Wrapf(err, errors.DatabaseError, "update user failed")
+	return errors2.Wrapf(err, errors2.DatabaseError, "update user failed")
 }
 
 func parseGetUserByIdError(userId int64, err error) error {
 	pgError, isPgError := err.(*pgconn.PgError)
 
 	if isPgError && pgError.Code == pgerrcode.NoDataFound {
-		return errors.Wrapf(err, errors.NotFoundError, "user with id \"%d\" not found", userId)
+		return errors2.Wrapf(err, errors2.NotFoundError, "user with id \"%d\" not found", userId)
 	}
 	if err.Error() == "no rows in result set" {
-		return errors.Wrapf(err, errors.NotFoundError, "user with id \"%d\" not found", userId)
+		return errors2.Wrapf(err, errors2.NotFoundError, "user with id \"%d\" not found", userId)
 	}
 
-	return errors.Wrap(err, errors.DatabaseError, "get user by id failed")
+	return errors2.Wrap(err, errors2.DatabaseError, "get user by id failed")
 }
 
 func parseGetUserByEmailError(email string, err error) error {
 	pgError, isPgError := err.(*pgconn.PgError)
 
 	if isPgError && pgError.Code == pgerrcode.NoDataFound {
-		return errors.Wrapf(err, errors.NotFoundError, "user with email \"%s\" not found", email)
+		return errors2.Wrapf(err, errors2.NotFoundError, "user with email \"%s\" not found", email)
 	}
 	if err.Error() == "no rows in result set" {
-		return errors.Wrapf(err, errors.NotFoundError, "user with email \"%s\" not found", email)
+		return errors2.Wrapf(err, errors2.NotFoundError, "user with email \"%s\" not found", email)
 	}
 
-	return errors.Wrap(err, errors.DatabaseError, "get user by email failed")
+	return errors2.Wrap(err, errors2.DatabaseError, "get user by email failed")
 }

@@ -1,38 +1,40 @@
 package application
 
 import (
-	"github.com/gin-gonic/gin"
-	"go-backend-template/src/internal/base/crypto"
-	"go-backend-template/src/internal/base/database"
-	databaseImpl "go-backend-template/src/internal/base/database/impl"
 	userInfrastructure "go-backend-template/src/modules/user/infrastructure"
+	"go-backend-template/src/utils/http"
 )
 
 type UserModule struct {
 	UserController UserController
 }
 
-func NewUserModule(engine *gin.Engine, connManager databaseImpl.ConnManager, txManager database.TxManager, crypto crypto.Crypto) *UserModule {
+func NewUserModule(server *http.Server) *UserModule {
 	userRepositoryOpts := userInfrastructure.UserRepositoryOpts{
-		ConnManager: connManager,
+		ConnManager: server.ConnManager,
 	}
 	userRepository := userInfrastructure.NewUserRepository(userRepositoryOpts)
 
 	userServiceOpts := UserServiceOpts{
-		TxManager:      txManager,
+		TxManager:      server.TxManager,
 		UserRepository: userRepository,
-		Crypto:         crypto,
+		Crypto:         server.Crypto,
 	}
 	userService := NewUserService(userServiceOpts)
 
+	router := http.InitRouter(server, "/user")
+	controller := UserController{
+		Router:  router,
+		Service: userService,
+	}
+
 	module := &UserModule{
-		UserController: UserController{
-			Engine:  engine,
-			Service: userService,
-		},
+		UserController: controller,
 	}
 
 	module.UserController.Init()
+
+	print("User Module initialized\n")
 
 	return module
 }

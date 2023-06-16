@@ -1,18 +1,18 @@
 package http
 
 import (
-	errors2 "go-backend-template/src/internal/base/errors"
+	"go-backend-template/src/utils/errors"
 	"net/http"
 )
 
 func parseError(err error) (status int, message, details string) {
-	var baseErr *errors2.Error
+	var baseErr *errors.Error
 
-	if castErr, ok := err.(*errors2.Error); ok {
+	if castErr, ok := err.(*errors.Error); ok {
 		baseErr = castErr
 	}
 	if baseErr == nil {
-		baseErr = errors2.Wrap(err, errors2.InternalError, "")
+		baseErr = errors.Wrap(err, errors.InternalError, "")
 	}
 
 	status = convertErrorStatusToHTTP(baseErr.Status())
@@ -22,19 +22,19 @@ func parseError(err error) (status int, message, details string) {
 	return
 }
 
-func convertErrorStatusToHTTP(status errors2.Status) int {
+func convertErrorStatusToHTTP(status errors.Status) int {
 	switch status {
-	case errors2.BadRequestError:
+	case errors.BadRequestError:
 		return http.StatusBadRequest
-	case errors2.ValidationError:
+	case errors.ValidationError:
 		return http.StatusBadRequest
-	case errors2.UnauthorizedError:
+	case errors.UnauthorizedError:
 		return http.StatusUnauthorized
-	case errors2.WrongCredentialsError:
+	case errors.WrongCredentialsError:
 		return http.StatusUnauthorized
-	case errors2.NotFoundError:
+	case errors.NotFoundError:
 		return http.StatusNotFound
-	case errors2.AlreadyExistsError:
+	case errors.AlreadyExistsError:
 		return http.StatusConflict
 	default:
 		return http.StatusInternalServerError

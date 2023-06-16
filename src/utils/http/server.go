@@ -3,9 +3,9 @@ package http
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go-backend-template/src/internal/base/crypto"
-	databaseImpl "go-backend-template/src/internal/base/database/impl"
-	userApplication "go-backend-template/src/modules/user/application"
+	"go-backend-template/src/utils/crypto"
+	"go-backend-template/src/utils/database"
+	databaseImpl "go-backend-template/src/utils/database/impl"
 )
 
 type Config interface {
@@ -25,11 +25,9 @@ func NewServer(opts ServerOpts) *Server {
 	server := &Server{
 		Engine:      gin.New(),
 		config:      opts.Config,
-		crypto:      opts.Crypto,
+		Crypto:      opts.Crypto,
 		ConnManager: opts.ConnManager,
 	}
-
-	initRouter(server)
 
 	return server
 }
@@ -37,9 +35,9 @@ func NewServer(opts ServerOpts) *Server {
 type Server struct {
 	Engine      *gin.Engine
 	config      Config
-	crypto      crypto.Crypto
-	UserService userApplication.UserService
+	Crypto      crypto.Crypto
 	ConnManager databaseImpl.ConnManager
+	TxManager   database.TxManager
 }
 
 func (s Server) Listen() error {

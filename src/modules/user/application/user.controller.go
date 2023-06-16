@@ -2,21 +2,19 @@ package application
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-backend-template/src/api/utils"
+	http "go-backend-template/src/utils/http"
 )
 
 type UserController struct {
-	Engine  *gin.Engine
+	*http.Router
 	Service UserService
 }
 
 func (r *UserController) Init() {
-	r.Engine.GET("/user/test", r.login)
-
-	r.Engine.GET("/user/add", r.addUser)
-	r.Engine.GET("/users/me", r.authenticate, r.getMe)
-	r.Engine.PUT("/users/me", r.authenticate, r.updateMe)
-	r.Engine.PATCH("/users/me/password", r.authenticate, r.changeMyPassword)
+	r.RouterGroup.GET("/add", r.addUser)
+	r.RouterGroup.GET("/users/me", r.authenticate, r.getMe)
+	r.RouterGroup.PUT("/users/me", r.authenticate, r.updateMe)
+	r.RouterGroup.PATCH("/users/me/password", r.authenticate, r.changeMyPassword)
 }
 
 func (r *UserController) authenticate(c *gin.Context) {
@@ -34,77 +32,69 @@ func (r *UserController) authenticate(c *gin.Context) {
 func (r *UserController) addUser(c *gin.Context) {
 	var addUserDto AddUserDto
 
-	if err := utils.BindBody(&addUserDto, c); err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+	if err := http.BindBody(&addUserDto, c); err != nil {
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	user, err := r.Service.Add(utils.ContextWithReqInfo(c), addUserDto)
+	user, err := r.Service.Add(http.ContextWithReqInfo(c), addUserDto)
 
 	if err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	utils.OkResponse(user).Reply(c)
+	http.OkResponse(user).Reply(c)
 }
 
 func (r *UserController) updateMe(c *gin.Context) {
 	var updateUserDto UpdateUserDto
 
-	reqInfo := utils.GetReqInfo(c)
+	reqInfo := http.GetReqInfo(c)
 	updateUserDto.Id = reqInfo.UserId
 
-	if err := utils.BindBody(&updateUserDto, c); err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+	if err := http.BindBody(&updateUserDto, c); err != nil {
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	err := r.Service.Update(utils.ContextWithReqInfo(c), updateUserDto)
+	err := r.Service.Update(http.ContextWithReqInfo(c), updateUserDto)
 	if err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	utils.OkResponse(nil).Reply(c)
+	http.OkResponse(nil).Reply(c)
 }
 
 func (r *UserController) changeMyPassword(c *gin.Context) {
 	var changeUserPasswordDto ChangeUserPasswordDto
 
-	reqInfo := utils.GetReqInfo(c)
+	reqInfo := http.GetReqInfo(c)
 	changeUserPasswordDto.Id = reqInfo.UserId
 
-	if err := utils.BindBody(&changeUserPasswordDto, c); err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+	if err := http.BindBody(&changeUserPasswordDto, c); err != nil {
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	err := r.Service.ChangePassword(utils.ContextWithReqInfo(c), changeUserPasswordDto)
+	err := r.Service.ChangePassword(http.ContextWithReqInfo(c), changeUserPasswordDto)
 	if err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	utils.OkResponse(nil).Reply(c)
+	http.OkResponse(nil).Reply(c)
 }
 
 func (r *UserController) getMe(c *gin.Context) {
-	reqInfo := utils.GetReqInfo(c)
+	reqInfo := http.GetReqInfo(c)
 
-	user, err := r.Service.GetById(utils.ContextWithReqInfo(c), reqInfo.UserId)
+	user, err := r.Service.GetById(http.ContextWithReqInfo(c), reqInfo.UserId)
 	if err != nil {
-		utils.ErrorResponse(err, nil, true).Reply(c)
+		http.ErrorResponse(err, nil, true).Reply(c)
 		return
 	}
 
-	utils.OkResponse(user).Reply(c)
-}
-
-type Test struct {
-	Value int64 `json:"value"`
-}
-
-func (r *UserController) login(c *gin.Context) {
-	utils.OkResponse(Test{Value: 1}).Reply(c)
+	http.OkResponse(user).Reply(c)
 }

@@ -3,7 +3,7 @@ package http
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"go-backend-template/src/internal/base/request"
+	"go-backend-template/src/utils/request"
 )
 
 type reqInfoKeyType = string
@@ -12,7 +12,7 @@ const (
 	reqInfoKey reqInfoKeyType = "request-info"
 )
 
-func setTraceId(c *gin.Context, traceId string) {
+func SetTraceId(c *gin.Context, traceId string) {
 	info, exists := c.Get(reqInfoKey)
 	if exists {
 		parsedInfo := info.(request.RequestInfo)
@@ -26,7 +26,7 @@ func setTraceId(c *gin.Context, traceId string) {
 	c.Set(reqInfoKey, request.RequestInfo{TraceId: traceId})
 }
 
-func setUserId(c *gin.Context, userId int64) {
+func SetUserId(c *gin.Context, userId int64) {
 	info, exists := c.Get(reqInfoKey)
 	if exists {
 		parsedInfo := info.(request.RequestInfo)
@@ -40,7 +40,7 @@ func setUserId(c *gin.Context, userId int64) {
 	c.Set(reqInfoKey, request.RequestInfo{UserId: userId})
 }
 
-func getReqInfo(c *gin.Context) request.RequestInfo {
+func GetReqInfo(c *gin.Context) request.RequestInfo {
 	info, ok := c.Get(reqInfoKey)
 	if ok {
 		return info.(request.RequestInfo)
@@ -49,7 +49,7 @@ func getReqInfo(c *gin.Context) request.RequestInfo {
 	return request.RequestInfo{}
 }
 
-func contextWithReqInfo(c *gin.Context) context.Context {
+func ContextWithReqInfo(c *gin.Context) context.Context {
 	info, ok := c.Get(reqInfoKey)
 	if ok {
 		return request.WithRequestInfo(c, info.(request.RequestInfo))

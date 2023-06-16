@@ -1,8 +1,8 @@
 package impl
 
 import (
-	"go-backend-template/src/internal/base/crypto"
-	errors2 "go-backend-template/src/internal/base/errors"
+	"go-backend-template/src/utils/crypto"
+	"go-backend-template/src/utils/errors"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -57,12 +57,12 @@ func (*cryptoImpl) ParseAndValidateJWT(token string, secret string) (map[string]
 		return map[string]interface{}{}, err
 	}
 	if !parsedToken.Valid {
-		return map[string]interface{}{}, errors2.New(errors2.InternalError, "token validation error")
+		return map[string]interface{}{}, errors.New(errors.InternalError, "token validation error")
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return map[string]interface{}{}, errors2.New(errors2.InternalError, "token validation error")
+		return map[string]interface{}{}, errors.New(errors.InternalError, "token validation error")
 	}
 
 	payload := make(map[string]interface{})
@@ -81,7 +81,7 @@ func (*cryptoImpl) ParseJWT(token string, secret string) (map[string]interface{}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return map[string]interface{}{}, errors2.New(errors2.InternalError, "token parsing error")
+		return map[string]interface{}{}, errors.New(errors.InternalError, "token parsing error")
 	}
 
 	payload := make(map[string]interface{})
