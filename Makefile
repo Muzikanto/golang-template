@@ -54,7 +54,7 @@ rename-project:
     endif
 
 .SILENT: build-http
-build-http:
+build:
 	@go build -o ./bin/http-server ./src/main.go
 	@echo executable file \"http-server\" saved in ./bin/http-server
 
@@ -101,7 +101,7 @@ fmt:
 # Watch
 .SILENT: dev
 dev:
-	ENT_PATH=.env gin run ./src/main.go
+	ENT_PATH=.env gin run ./src/main.go --appPort 3000 --port 5000
 
 # Start
 .SILENT: start

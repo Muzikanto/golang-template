@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"go-backend-template/src/utils/database"
 	"go-backend-template/src/utils/http"
+	"go.uber.org/dig"
+	"log"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -23,20 +25,27 @@ type Config struct {
 	AccessTokenSecret     string `envconfig:"ACCESS_TOKEN_SECRET"`
 }
 
-func ParseEnv(envPath string) (*Config, error) {
+func ParseEnv(container *dig.Container, envPath string) *Config {
 	if envPath != "" {
 		if err := gotenv.OverLoad(envPath); err != nil {
-			return nil, err
+			log.Fatal(err)
 		}
 	}
 
 	var config Config
 
 	if err := envconfig.Process("", &config); err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return &config, nil
+	// di
+	if err := container.Provide(func() *Config {
+		return &config
+	}); err != nil {
+		log.Fatal(err)
+	}
+
+	return &config
 }
 
 func (c *Config) HTTP() http.Config {

@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
+	"go-backend-template/src/config"
+	"go-backend-template/src/modules/test"
 	userApplication "go-backend-template/src/modules/user/application"
-	"go-backend-template/src/utils/cli"
 	"go-backend-template/src/utils/crypto/impl"
 	"go-backend-template/src/utils/database/impl"
 	"go-backend-template/src/utils/http"
@@ -13,24 +14,28 @@ import (
 
 func main() {
 	container := dig.New()
-
 	ctx := context.Background()
-	parser := cli.NewParser()
 
-	conf, err := parser.ParseConfig()
-	if err != nil {
+	// config
+	conf := config.ParseEnv(container, ".env")
+
+	// db
+	dbClient := database.NewClient(ctx, conf.Database())
+	if err := container.Provide(func() *database.Client {
+		return dbClient
+	}); err != nil {
 		log.Fatal(err)
+		return
 	}
 
-	dbClient := database.NewClient(ctx, conf.Database())
-
-	err = dbClient.Connect()
+	err := dbClient.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer dbClient.Close()
 
+	// crypto
 	crypto := impl.NewCrypto()
 	container.Provide(crypto)
 
@@ -47,6 +52,8 @@ func main() {
 	userApplication.NewUserModule(
 		server,
 	)
+
+	test.CreateController(server.Engine)
 
 	log.Fatal(server.Listen())
 }
