@@ -61,6 +61,26 @@ func BindBody(payload interface{}, c *gin.Context) error {
 	return nil
 }
 
+func BindQuery(payload interface{}, c *gin.Context) error {
+	err := c.BindQuery(payload)
+
+	if err != nil {
+		return error2.New(error2.BadRequestError, err.Error())
+	}
+
+	return nil
+}
+
+func Bind(payload interface{}, c *gin.Context) error {
+	err := c.Bind(payload)
+
+	if err != nil {
+		return error2.New(error2.BadRequestError, err.Error())
+	}
+
+	return nil
+}
+
 // utils
 
 func convertErrorStatusToHTTP(status error2.Status) int {

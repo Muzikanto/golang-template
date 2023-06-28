@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	userDto "go-backend-template/src/modules/user/dto"
 	"go-backend-template/src/utils/core"
 	"go-backend-template/src/utils/engine"
 	"go.uber.org/dig"
@@ -23,6 +24,7 @@ func CreateController(container *dig.Scope, engine *engine.Engine) *UserControll
 	}
 
 	controller.Router.GET("/create", controller.CreateUser)
+	//controller.Router.GET("/create", controller.Authorize, controller.AuthGuard, controller.RoleGuard([]string{"Admin"}), controller.CreateUser)
 
 	controller.Logger.Log("UserController initialized")
 
@@ -30,5 +32,12 @@ func CreateController(container *dig.Scope, engine *engine.Engine) *UserControll
 }
 
 func (r *UserController) CreateUser(c *gin.Context) {
-	r.OkResponse(1).Reply(c)
+	var dto = userDto.CreateUserDto{}
+
+	if err := r.Bind(&dto, c); err != nil {
+		r.ErrorResponse(err, nil, true).Reply(c)
+		return
+	}
+
+	r.OkResponse(dto).Reply(c)
 }
